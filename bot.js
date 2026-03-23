@@ -1,3 +1,7 @@
+import express from "express";
+const app = express();
+const PORT = process.env.PORT || 3000;
+
 import TelegramBot from "node-telegram-bot-api";
 import { BOT_TOKEN } from "./config.js";
 import { connectDB } from "./db.js";
@@ -390,4 +394,8 @@ bot.onText(/\/rename (.+)/, async (msg, match) => {
     } catch (err) {
         bot.sendMessage(chatId, "❌ Rename failed");
     }
+});
+
+app.listen(PORT, () => {
+    console.log("Server running...");
 });
