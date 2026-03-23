@@ -20,7 +20,15 @@ connectDB();
 
 
 
+app.get("/debug/collections", async (req, res) => {
+    try {
+        const collections = await mongoose.connection.Video.listCollections().toArray();
 
+        res.json(collections.map(c => c.name));
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 
 
