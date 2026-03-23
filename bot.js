@@ -27,9 +27,14 @@ connectDB();
 
 app.get("/debug/collections", async (req, res) => {
     try {
-        const collections = await mongoose.connection.Video.listCollections().toArray();
+        if (!mongoose.connection.db) {
+            return res.status(500).json({ error: "DB not connected yet" });
+        }
+
+        const collections = await mongoose.connection.db.listCollections().toArray();
 
         res.json(collections.map(c => c.name));
+
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
