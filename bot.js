@@ -1,6 +1,7 @@
 import express from "express";
 const app = express();
 const PORT = process.env.PORT || 3000;
+import mongoose from "mongoose";
 
 import TelegramBot from "node-telegram-bot-api";
 import { BOT_TOKEN } from "./config.js";
