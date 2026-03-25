@@ -145,21 +145,20 @@ bot.onText(/\/status (.+)/, async (msg, match) => {
 const PER_PAGE = 5;
 
 const sendVideoPage = async (chatId, page = 1) => {
-    const videos = await getAllVideos();
+    const LIMIT = 20;
+
+    const videos = await getAllVideos(page, LIMIT);
 
     if (!videos.data || videos.data.length === 0) {
         return bot.sendMessage(chatId, "No videos found");
     }
 
-    const total = videos.data.length;
-    const totalPages = Math.ceil(total / PER_PAGE);
-
-    const start = (page - 1) * PER_PAGE;
-    const pageData = videos.data.slice(start, start + PER_PAGE);
+    const total = videos.meta?.total || 0;
+    const totalPages = Math.ceil(total / LIMIT);
 
     let text = `🎥 Videos (Page ${page}/${totalPages}):\n\n`;
 
-    pageData.forEach((v) => {
+    videos.data.forEach((v) => {
         text += `🎬 ${v.name}
 ▶️ https://roninmovies.4meplayer.online/#${v.id}
 ⬇️ https://roninmovies.4meplayer.online/#${v.id}&dl=1
@@ -167,7 +166,6 @@ const sendVideoPage = async (chatId, page = 1) => {
 `;
     });
 
-    // 🔘 Buttons
     const buttons = [];
 
     if (page > 1) {
