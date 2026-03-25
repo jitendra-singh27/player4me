@@ -116,7 +116,11 @@ bot.onText(/\/upload (.+)/, async (msg, match) => {
     }
 }, 5000);
 
-});
+} catch (err) {
+    bot.sendMessage(chatId, "❌ Upload failed");
+}
+
+}); 
         
 // ⏳ Check Status
 bot.onText(/\/status (.+)/, async (msg, match) => {
