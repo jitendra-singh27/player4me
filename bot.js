@@ -116,6 +116,8 @@ bot.onText(/\/upload (.+)/, async (msg, match) => {
     }
 }, 5000);
 
+});
+        
 // ⏳ Check Status
 bot.onText(/\/status (.+)/, async (msg, match) => {
     const chatId = msg.chat.id;
