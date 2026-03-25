@@ -45,7 +45,7 @@ app.get("/debug/collections", async (req, res) => {
 // START
 bot.onText(/\/start/, (msg) => {
     bot.sendMessage(msg.chat.id, `
-🎬 Movie Bot Commands:
+🎬 Player 4 Me Video Uploader Commands:
 
 /upload <url>
 /status < taskId >
