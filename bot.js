@@ -72,53 +72,49 @@ bot.onText(/\/upload (.+)/, async (msg, match) => {
         bot.sendMessage(chatId, `⏳ Processing...\nTask ID: ${taskId}`);
 
         // 🔁 Polling every 5 sec
-        const interval = setInterval(async () => {
-            try {
-                const statusData = await getUploadStatus(taskId);
+      const interval = setInterval(async () => {
+    try {
+        const statusData = await getUploadStatus(taskId);
 
-                if (statusData.status === "completed") {
-                    clearInterval(interval);
+        console.log("STATUS:", statusData);
 
-                    const videoId = statusData.video?.id;
+        if (statusData?.status === "completed") {
+            clearInterval(interval);
 
-                    if (!videoId) {
-                        return bot.sendMessage(chatId, "❌ Video ID not found");
-                    }
+            const videoId = statusData?.video?.id;
 
-                    // Save correct videoId
-                    await Video.create({
-                        videoId,
-                        title: url.split("/").pop(),
-                        status: "completed"
-                    });
+            if (!videoId) {
+                return bot.sendMessage(chatId, "❌ Video ID not found");
+            }
 
-                    const link = `https://roninmovies.4meplayer.online/#${videoId}`;
-                    const download = `https://roninmovies.4meplayer.online/#${videoId}&dl=1`;
+            await Video.create({
+                videoId,
+                title: url.split("/").pop(),
+                status: "completed"
+            });
 
-                    bot.sendMessage(chatId, `
+            const link = `https://roninmovies.4meplayer.online/#${videoId}`;
+            const download = `${link}&dl=1`;
+
+            return bot.sendMessage(chatId, `
 ✅ Upload Completed!
 
 🎬 Watch: ${link}
 ⬇️ Download: ${download}
-                    `);
-                }
+            `);
+        }
 
-                if (statusData.status === "failed") {
-                    clearInterval(interval);
-                    bot.sendMessage(chatId, "❌ Upload failed during processing");
-                }
-
-            } catch (err) {
-                clearInterval(interval);
-                bot.sendMessage(chatId, "❌ Error checking status");
-            }
-        }, 5000);
+        if (statusData?.status === "failed") {
+            clearInterval(interval);
+            return bot.sendMessage(chatId, "❌ Upload failed");
+        }
 
     } catch (err) {
-        bot.sendMessage(chatId, "❌ Upload failed");
-    }
-});
+        console.log("Polling error:", err.message);
 
+        // ✅ keep retrying
+    }
+}, 5000);
 
 // ⏳ Check Status
 bot.onText(/\/status (.+)/, async (msg, match) => {
