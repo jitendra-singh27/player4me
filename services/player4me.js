@@ -31,11 +31,12 @@ export const getUploadStatus = async (id) => {
 };
 
 // 🎬 All Videos
-export const getAllVideos = async () => {
+export const getAllVideos = async (page = 1, limit = 5) => {
     const res = await axios.get(
-        `${BASE_URL}/video/manage`,
+        `${BASE_URL}/video/manage?page=${page}&limit=${limit}`,
         { headers: getHeaders() }
     );
+
     return res.data;
 };
 
