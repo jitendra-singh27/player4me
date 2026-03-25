@@ -19,7 +19,15 @@ import {
 } from "./services/player4me.js";
 
 
-const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+const bot = new TelegramBot(BOT_TOKEN, {
+    polling: {
+        interval: 300,
+        autoStart: true,
+        params: {
+            timeout: 10
+        }
+    }
+});
 
 connectDB();
 
