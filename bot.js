@@ -296,7 +296,7 @@ bot.onText(/\/delete (.+)/, async (msg, match) => {
 
 
 const sendSearchPage = async (chatId, queryText, page = 1) => {
-    const videos = await getAllVideos(page, 5);
+    const videos = await getAllVideos();
 
     if (!videos.data || videos.data.length === 0) {
         return bot.sendMessage(chatId, "No videos found");
