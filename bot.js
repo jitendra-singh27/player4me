@@ -102,7 +102,7 @@ bot.onText(/\/upload (.+)/, async (msg, match) => {
             const link = `https://roninmovies.4meplayer.online/#${videoId}`;
             const download = `${link}&dl=1`;
 
-             bot.sendMessage(chatId, `
+            return  bot.sendMessage(chatId, `
 ✅ Upload Completed!
 
 🎬 Watch: ${link}
