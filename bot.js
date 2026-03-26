@@ -194,7 +194,7 @@ const sendVideoPage = async (chatId, page = 1) => {
         buttons.push({ text: "➡️ Next", callback_data: `videos_${page + 1}` });
     }
 
-return sendLongMessage(chatId, text, {
+return bot.sendMessage(chatId, text, {
     reply_markup: {
         inline_keyboard: [buttons]
     }
@@ -210,25 +210,28 @@ bot.on("callback_query", async (query) => {
     const chatId = query.message.chat.id;
     const data = query.data;
 
-    if (data.startsWith("videos_")) {
-        const page = parseInt(data.split("_")[1]);
+    try {
+        await bot.deleteMessage(chatId, query.message.message_id);
 
-        try {
-            // Remove old message
-            await bot.deleteMessage(chatId, query.message.message_id);
-
-            // Send new page
+        if (data.startsWith("videos_")) {
+            const page = parseInt(data.split("_")[1]);
             await sendVideoPage(chatId, page);
-
-        } catch (err) {
-            console.error(err);
         }
+
+        if (data.startsWith("search_")) {
+            const parts = data.split("_");
+            const queryText = parts[1];
+            const page = parseInt(parts[2]);
+
+            await sendSearchPage(chatId, queryText, page);
+        }
+
+    } catch (err) {
+        console.error(err);
     }
 
     bot.answerCallbackQuery(query.id);
 });
-
-
 
 // bot.onText(/\/videos/, async (msg) => {
 //     const chatId = msg.chat.id;
