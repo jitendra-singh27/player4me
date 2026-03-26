@@ -80,16 +80,14 @@ bot.onText(/\/upload (.+)/, async (msg, match) => {
         bot.sendMessage(chatId, `⏳ Processing...\nTask ID: ${taskId}`);
 
         // 🔁 Polling every 5 sec
-      const interval = setInterval(async () => {
-    try {
-        const statusData = await getUploadStatus(taskId);
+        const interval = setInterval(async () => {
+            try {
+                const statusData = await getUploadStatus(taskId);
 
-        console.log("STATUS:", statusData);
-
-        if (statusData?.status === "completed") {
+        if (statusData.status === "completed") {
             clearInterval(interval);
 
-            const videoId = statusData?.video?.id;
+            const videoId = statusData.video?.id;
 
             if (!videoId) {
                 return bot.sendMessage(chatId, "❌ Video ID not found");
@@ -104,31 +102,33 @@ bot.onText(/\/upload (.+)/, async (msg, match) => {
             const link = `https://roninmovies.4meplayer.online/#${videoId}`;
             const download = `${link}&dl=1`;
 
-            return bot.sendMessage(chatId, `
+             bot.sendMessage(chatId, `
 ✅ Upload Completed!
 
 🎬 Watch: ${link}
 ⬇️ Download: ${download}
-            `);
-        }
+       `);
+                }
+
+                if (statusData.status === "failed") {
+                    clearInterval(interval);
+                    bot.sendMessage(chatId, "❌ Upload failed during processing");
+                }
 
         if (statusData?.status === "failed") {
             clearInterval(interval);
             return bot.sendMessage(chatId, "❌ Upload failed");
         }
 
+     } catch (err) {
+                clearInterval(interval);
+                bot.sendMessage(chatId, "❌ Error checking status");
+            }
+        }, 5000);
     } catch (err) {
-        console.log("Polling error:", err.message);
-
-        // ✅ keep retrying
+        bot.sendMessage(chatId, "❌ Upload failed");
     }
-}, 5000);
-
-} catch (err) {
-    bot.sendMessage(chatId, "❌ Upload failed");
-}
-
-}); 
+});
         
 // ⏳ Check Status
 bot.onText(/\/status (.+)/, async (msg, match) => {
