@@ -152,15 +152,6 @@ bot.onText(/\/status (.+)/, async (msg, match) => {
 // 🎬 List Videos
 const PER_PAGE = 5;
 
-const sendLongMessage = async (chatId, text, options = {}) => {
-    const MAX = 4000;
-
-    const chunks = text.match(/[\s\S]{1,4000}/g);
-
-    for (let i = 0; i < chunks.length; i++) {
-        await bot.sendMessage(chatId, chunks[i], i === chunks.length - 1 ? options : {});
-    }
-};
 
 const sendVideoPage = async (chatId, page = 1) => {
     const LIMIT = 5;
@@ -170,13 +161,18 @@ const sendVideoPage = async (chatId, page = 1) => {
     if (!videos.data || videos.data.length === 0) {
         return bot.sendMessage(chatId, "No videos found");
     }
+const allVideos = videos.data;
 
-    const total = videos.meta?.total || 0;
-    const totalPages = Math.ceil(total / LIMIT);
+// ✅ Manual pagination (FIX)
+const total = allVideos.length;
+const totalPages = Math.ceil(total / LIMIT);
 
-    let text = `🎥 Videos (Page ${page}/${totalPages}):\n\n`;
+const start = (page - 1) * LIMIT;
+const pageData = allVideos.slice(start, start + LIMIT);
 
-    videos.data.forEach((v) => {
+let text = `🎥 Videos (Page ${page}/${totalPages}):\n\n`;
+
+pageData.forEach((v) => {
         text += `🎬 ${v.name}
 ▶️ https://roninmovies.4meplayer.online/#${v.id}
 ⬇️ https://roninmovies.4meplayer.online/#${v.id}&dl=1
@@ -378,12 +374,6 @@ bot.on("callback_query", async (query) => {
 
     try {
         await bot.deleteMessage(chatId, query.message.message_id);
-
-        // 🎬 Pagination
-        if (data.startsWith("videos_")) {
-            const page = parseInt(data.split("_")[1]);
-            await sendVideoPage(chatId, page);
-        }
 
         // 🔍 Search Pagination
         if (data.startsWith("search_")) {
