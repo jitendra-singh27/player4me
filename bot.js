@@ -152,8 +152,18 @@ bot.onText(/\/status (.+)/, async (msg, match) => {
 // 🎬 List Videos
 const PER_PAGE = 5;
 
+const sendLongMessage = async (chatId, text, options = {}) => {
+    const MAX = 4000;
+
+    const chunks = text.match(/[\s\S]{1,4000}/g);
+
+    for (let i = 0; i < chunks.length; i++) {
+        await bot.sendMessage(chatId, chunks[i], i === chunks.length - 1 ? options : {});
+    }
+};
+
 const sendVideoPage = async (chatId, page = 1) => {
-    const LIMIT = 20;
+    const LIMIT = 5;
 
     const videos = await getAllVideos(page, LIMIT);
 
@@ -184,11 +194,11 @@ const sendVideoPage = async (chatId, page = 1) => {
         buttons.push({ text: "➡️ Next", callback_data: `videos_${page + 1}` });
     }
 
-    return bot.sendMessage(chatId, text, {
-        reply_markup: {
-            inline_keyboard: [buttons]
-        }
-    });
+return sendLongMessage(chatId, text, {
+    reply_markup: {
+        inline_keyboard: [buttons]
+    }
+});
 };
 
 bot.onText(/\/videos/, async (msg) => {
